@@ -96,7 +96,7 @@ set textwidth=79
 set nu
 
 " Relative Zeilennumerierung
-set relativenumber
+" set relativenumber
 
 " Backup verzeichnis
 set bdir=~/.vim/backup
