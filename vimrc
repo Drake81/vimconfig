@@ -90,7 +90,7 @@ command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
-set textwidth=79
+"set textwidth=79
 
 " Setze Zeilennumerierung
 set nu
@@ -115,7 +115,7 @@ set wildmenu
 set wildchar=<Tab>
 set wildmode=full
 
-set guifont=Monospace\ 14
+set guifont=Monospace\ 10 
 
 "Highlighten der Cursorline
 set cul
@@ -127,7 +127,8 @@ set expandtab
 autocmd BufEnter * silent! lcd %:p:h
 
 "Definiert das Colorscheme -- desert -- Global.
-colorscheme default "desert
+colorscheme default
+"colorscheme desert
 
 "Speichern auf F2 legen
 nmap <F2> :w<CR>
@@ -148,15 +149,17 @@ imap <F7> <ESC>:cp<CR>
 nmap <F8> :cn<CR>
 imap <F8> <ESC>:cn<CR>
 
+"nmap <F12> :w<CR>:!gnome-terminal --maximize -e "./$(basename % .c)"<CR>
+"imap <F12> <ESC>:w<CR>:!gnome-terminal --maximize -e "./$(basename % .c)"<CR>
+
 imap <F9>  <ESC>:TlistToggle<CR>i
 nmap <F9>  :TlistToggle<CR>
 
 imap <F10>  <ESC>:NERDTreeToggle<CR>i
 nmap <F10>  :NERDTreeToggle<CR>
 
-nmap <F12> :w<CR>:!gnome-terminal --maximize -e "./$(basename % .c)"<CR>
-imap <F12> <ESC>:w<CR>:!gnome-terminal --maximize -e "./$(basename % .c)"<CR>
-
+imap <F11>  <ESC>:!gnome-terminal --maximize<CR>
+nmap <F11>  :!gnome-terminal --maximize<CR>
 
 "Kommentare
 "imap <F7> <ESC>0i//
@@ -165,7 +168,13 @@ imap <F12> <ESC>:w<CR>:!gnome-terminal --maximize -e "./$(basename % .c)"<CR>
 "imap <F8> <ESC>0xxi
 "nmap <F8> 0xx<ESC>
 
+" Anpassungen für eclim
+set guioptions-=m " turn off menu bar
+"set guioptions-=T " turn off toolbar
+set guioptions-=L " turn off left scrollbar
+set guioptions-=l
 
+let g:EclimBrowser = 'google-chrome'
 
 "Klammern automatisch schliessen
 inoremap {      {}<Left>
@@ -174,6 +183,6 @@ inoremap {{     {
 inoremap {}     {}
 
 "Ersetzungen im Eingabe-MOdus
-iab #i #include
-iab #d #define
+"iab #i #include
+"iab #d #define
 
