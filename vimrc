@@ -73,6 +73,9 @@ if has("autocmd")
     \ endif
 
   augroup END
+ 
+  " Update VIMRC automatisch 
+  autocmd bufwritepost .vimrc source $MYVIMRC  
 
 else
   
@@ -80,6 +83,9 @@ else
 set autoindent		" always set autoindenting on
 
 endif " has("autocmd")
+
+" Open .vimrc with shortcut
+nmap <leader>v :vsp $MYVIMRC<CR>
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
@@ -95,8 +101,27 @@ set softtabstop=4
 " Setze Zeilennumerierung
 set nu
 
+" Setze Rechtschreibung auf Deutsch
+set spell spelllang=de
+set nospell
+
 " Relative Zeilennumerierung
 " set relativenumber
+
+" Textumbruch
+set wrap lbr nolist
+set showbreak=…
+
+" Shortcut to rapidly toggle `set list`
+nmap <leader>l :set list!<CR>
+ 
+" Use the same symbols as TextMate for tabstops and EOLs
+set listchars=tab:▸\ ,eol:¬
+
+"Invisible character colors
+highlight NonText guifg=#4a4a59
+highlight SpecialKey guifg=#4a4a59
+
 
 " Backup verzeichnis
 set bdir=~/.vim/backup
@@ -122,6 +147,8 @@ set cul
 
 "Leerzeichenanstatt Tabs
 set expandtab
+
+
 
 " Arbeitsverzeichnis auf ort der Datei legen
 autocmd BufEnter * silent! lcd %:p:h
@@ -149,9 +176,6 @@ imap <F7> <ESC>:cp<CR>
 nmap <F8> :cn<CR>
 imap <F8> <ESC>:cn<CR>
 
-"nmap <F12> :w<CR>:!gnome-terminal --maximize -e "./$(basename % .c)"<CR>
-"imap <F12> <ESC>:w<CR>:!gnome-terminal --maximize -e "./$(basename % .c)"<CR>
-
 imap <F9>  <ESC>:TlistToggle<CR>i
 nmap <F9>  :TlistToggle<CR>
 
@@ -160,6 +184,24 @@ nmap <F10>  :NERDTreeToggle<CR>
 
 imap <F11>  <ESC>:!gnome-terminal --maximize<CR>
 nmap <F11>  :!gnome-terminal --maximize<CR>
+
+" Zwingt mich hjkl zu nutzen
+"nnoremap <up> <nop>
+"nnoremap <down> <nop>
+"nnoremap <left> <nop>
+"nnoremap <right> <nop>
+"inoremap <up> <nop>
+"inoremap <down> <nop>
+"inoremap <left> <nop>
+"inoremap <right> <nop>
+"nnoremap j gj
+"nnoremap k gk
+
+"; Ist jetzt der Doppelpunkt spart mit das shift
+nnoremap ; :
+
+"jj verhält sich im commandmode wie <ESC> 
+inoremap jj <ESC>
 
 "Kommentare
 "imap <F7> <ESC>0i//
