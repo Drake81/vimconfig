@@ -87,6 +87,9 @@ endif " has("autocmd")
 " Open .vimrc with shortcut
 nmap <leader>v :vsp $MYVIMRC<CR>
 
+" execute a perl script right here in vim
+nmap <leader>p :!perl %<CR>
+
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
 command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
@@ -125,6 +128,7 @@ highlight SpecialKey guifg=#4a4a59
 
 " Backup verzeichnis
 set bdir=~/.vim/backup
+set nobackup
 
 " Always show the status line
 set laststatus=2
@@ -140,7 +144,7 @@ set wildmenu
 set wildchar=<Tab>
 set wildmode=full
 
-set guifont=Monospace\ 10 
+set guifont=Monospace\ 10
 
 "Highlighten der Cursorline
 set cul
@@ -148,42 +152,60 @@ set cul
 "Leerzeichenanstatt Tabs
 set expandtab
 
-
+"kein folding
+set nofoldenable
 
 " Arbeitsverzeichnis auf ort der Datei legen
 autocmd BufEnter * silent! lcd %:p:h
 
 "Definiert das Colorscheme -- desert -- Global.
-colorscheme default
-"colorscheme desert
+set t_Co=256
+set background=light
+colorscheme default 
+if &term =~ "xterm\\|rxvt"
+set background=dark
+colorscheme desert
+endif
+"if (&term=="rxvt-unicode-256color" || &term=="screen")
+"endif
 
 "Speichern auf F2 legen
 nmap <F2> :w<CR>
 imap <F2> <ESC>:w<CR>a
 
+nmap <F3> :BufstopFast<CR>
+imap <F3> <ESC>:BufstopFast<CR>a
+
 imap <F4> <ESC>:w<CR>:bn<CR>
 nmap <F4> :w<CR>:bn<CR>
 
-nmap <F5> :w<CR>:make<CR>
-imap <F5> <ESC>:w<CR>:make<CR>
+nmap <F5> :nohls<CR>
+imap <F5> <ESC>:nohls<CR>a
 
-nmap <F6> :cl<CR>
-imap <F6> <ESC>:cl<CR>
+nmap <F6> :w<CR>:make<CR>
+imap <F6> <ESC>:w<CR>:make<CR>
 
-nmap <F7> :cp<CR>
-imap <F7> <ESC>:cp<CR>
+nmap <F7> :w<CR>:make program<CR>
+imap <F7> <ESC>:w<CR>:make program<CR>
 
-nmap <F8> :cn<CR>
-imap <F8> <ESC>:cn<CR>
+" Die brauche nicht mehr dank Eclim ;-)
+"nmap <F6> :cl<CR>
+"imap <F6> <ESC>:cl<CR>
 
-imap <F9>  <ESC>:TlistToggle<CR>i
-nmap <F9>  :TlistToggle<CR>
+"nmap <F7> :cp<CR>
+"imap <F7> <ESC>:cp<CR>
 
-imap <F10>  <ESC>:NERDTreeToggle<CR>i
-nmap <F10>  :NERDTreeToggle<CR>
+"nmap <F8> :cn<CR>
+"imap <F8> <ESC>:cn<CR>
 
-imap <F11>  <ESC>:!gnome-terminal --maximize<CR>
-nmap <F11>  :!gnome-terminal --maximize<CR>
+nnoremap <F9> :GundoToggle<CR>
+
+imap <F10>  <ESC>:TlistToggle<CR>i
+nmap <F10>  :TlistToggle<CR>
+
+imap <F11>  <ESC>:NERDTreeToggle<CR>i
+nmap <F11>  :NERDTreeToggle<CR>
+
 
 " Zwingt mich hjkl zu nutzen
 "nnoremap <up> <nop>
@@ -197,8 +219,6 @@ nmap <F11>  :!gnome-terminal --maximize<CR>
 "nnoremap j gj
 "nnoremap k gk
 
-"; Ist jetzt der Doppelpunkt spart mit das shift
-nnoremap ; :
 
 "jj verhält sich im commandmode wie <ESC> 
 inoremap jj <ESC>
@@ -216,15 +236,68 @@ set guioptions-=m " turn off menu bar
 set guioptions-=L " turn off left scrollbar
 set guioptions-=l
 
+"Eclipse-Plugin browser...
 let g:EclimBrowser = 'google-chrome'
 
 "Klammern automatisch schliessen
-inoremap {      {}<Left>
-inoremap {<CR>  {<CR>}<Esc>O
-inoremap {{     {
-inoremap {}     {}
+"inoremap {      {}<Left>
+"inoremap {<CR>  {<CR>}<Esc>O
+"inoremap {{     {
+"inoremap {}     {}
 
 "Ersetzungen im Eingabe-MOdus
 "iab #i #include
 "iab #d #define
+
+"clang-plugin option => c vervollstaendigung
+set completeopt=menu,longest
+
+"Cursorfarbe im terminal
+if &term =~ "xterm\\|rxvt"
+  " use an orange cursor in insert mode
+  let &t_SI = "\<Esc>]12;orange\x7"
+  " use a red cursor otherwise
+  let &t_EI = "\<Esc>]12;red\x7"
+  silent !echo -ne "\033]12;red\007"
+  " reset cursor when vim exits
+  autocmd VimLeave * silent !echo -ne "\033]112\007"
+  " use \003]12;gray\007 for gnome-terminal
+endif
+
+"Cursorform im terminal
+if &term =~ "^xterm\\|^rxvt"
+  " solid underscore
+  let &t_SI .= "\<Esc>[3 q"
+  " solid block
+  let &t_EI .= "\<Esc>[2 q"
+  " 1 or 0 -> blinking block
+  " 3 -> blinking underscore
+endif
+
+
+" <-- Dateien in einem Git-Projek anzeigen
+" Strip the newline from the end of a string
+function! Chomp(str)
+  return substitute(a:str, '\n$', '', '')
+endfunction
+
+" Find a file and pass it to cmd
+function! DmenuOpen(cmd)
+  "let fname = Chomp(system("git ls-files | dmenu -i -l 20 -p " . a:cmd))
+  let fname = Chomp(system("ls | dmenu -i -l 20 -p " . a:cmd))
+  if empty(fname)
+    return
+  endif
+  execute a:cmd . " " . fname
+endfunction
+
+"Fkt. Auf <- Ctrl f gelegt
+map <c-f> :call DmenuOpen("e")<cr>
+
+"Wenn x68 dann setze Highlight auf asm
+au BufNewFile,BufRead *.x68 set filetype=asm
+
+set cot-=preview
+
+au FileType mail let b:delimitMate_autoclose = 0
 
